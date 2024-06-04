@@ -1,0 +1,16 @@
+{
+  "name": "accpi",
+  "version": "1.0.0",
+  "description": "Hello all! This is a little project which is meant to be a rip off of OAuth from google. It's just meant to be a universal\r way to log into whatever app you have made on WebX. It supports creating and logging into accounts, to access and to RW a\r persons data (such as a password change, giving or taking coins, etc...) and will hopefully enable a system which doesn't\r require you to make a new account for every WebX app you meet, but just log in with those very same credentials you use for\r everything aswell!",
+  "main": "maxserver-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7"
+  }
+}
