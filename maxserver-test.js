@@ -44,7 +44,7 @@ maxapi.post("/user/create", (req, res) => {
 maxapi.post("/user/login", (req, res) => {
     try {
         const { username, password } = req.body;
-        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (err, row) => {
+        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (error, row) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send("error logging in");
@@ -56,7 +56,7 @@ maxapi.post("/user/login", (req, res) => {
             if (!isCorrectPassword) {
                 return res.status(400).send("Invalid username or password");
             }
-            const token = jwt.sign({ username: row.username }, 'secret_key');
+            const token = jwt.sign({ username: row.username }, '1Max69!!!@420s');
             res.status(200).json({token});
 
         });
@@ -64,5 +64,47 @@ maxapi.post("/user/login", (req, res) => {
         console.log(err);
         console.log("Couldn't log in!");
         res.status(500).send("error logging in");
+    }
+});
+
+maxapi.post("/maxcoin/add", (req, res) => {
+    try {
+        const { token, amount } = req.body;
+        const username = jwt.decode(token, '1Max69!!!@420s');
+        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (error, row) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send("error? dunno m8");
+            }
+            if (!row) {
+                return res.status(400).send("Invalid token " + username);
+            }
+            maxdb.run("INSERT INTO users (maxcoins) VALUES (?)", [(row.maxcoins) + amount])
+            res.status(200).send("Money added");
+        });
+    } catch (err) {
+        console.log(err);
+        console.log("Couldn't add coin!");
+        res.status(500).send("Error minting coin");
+    }
+});
+
+maxapi.get("/maxcoin/check", (req, res) => {
+    try {
+        const { username } = req.body;
+        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (error, row) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send("error? dunno m8");
+            }
+            if (!row) {
+                return res.status(400).send("Invalid username");
+            }
+            res.status(200).json({ maxcoins: row.maxcoins });
+        });
+    } catch (err) {
+        console.log(err);
+        console.log("Couldn't check!");
+        res.status(500).send("Error checking balance");
     }
 });
