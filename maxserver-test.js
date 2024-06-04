@@ -44,7 +44,7 @@ maxapi.post("/user/create", (req, res) => {
 maxapi.post("/user/login", (req, res) => {
     try {
         const { username, password } = req.body;
-        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (error, row) => {
+        maxdb.get("SELECT * FROM users WHERE username = (?)", [username], async (error, row) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send("error logging in");
@@ -70,18 +70,22 @@ maxapi.post("/user/login", (req, res) => {
 maxapi.post("/maxcoin/add", (req, res) => {
     try {
         const { token, amount } = req.body;
-        const username = jwt.decode(token, '1Max69!!!@420s');
-        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (error, row) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).send("error? dunno m8");
+        const username = jwt.decode(token, '1Max69!!!@420s').username;
+        maxdb.get("SELECT * FROM users WHERE username = (?)", [username], (err, row) => {
+            if (err) {
+                return res.status(500).send("Error general");
             }
             if (!row) {
-                return res.status(400).send("Invalid token " + username);
+                return res.status(400).send("Username not found in MaxDB");
             }
-            maxdb.run("INSERT INTO users (maxcoins) VALUES (?)", [(row.maxcoins) + amount])
-            res.status(200).send("Money added");
-        });
+            maxdb.run("UPDATE users SET maxcoins = (?) WHERE username = (?)", [(row.maxcoins + amount), username], function (err) {
+                if (err) {
+                    return res.status(500).send("shit. on row " + row.id + " \n\n\n\n\n" + err);
+                }
+                res.status(200).send("Money added?!?!?!?");
+            });
+        })
+
     } catch (err) {
         console.log(err);
         console.log("Couldn't add coin!");
@@ -89,10 +93,36 @@ maxapi.post("/maxcoin/add", (req, res) => {
     }
 });
 
+maxapi.post("/maxcoin/remove", (req, res) => {
+    try {
+        const { token, amount } = req.body;
+        const username = jwt.decode(token, '1Max69!!!@420s').username;
+        maxdb.get("SELECT * FROM users WHERE username = (?)", [username], (err, row) => {
+            if (err) {
+                return res.status(500).send("Error general");
+            }
+            if (!row) {
+                return res.status(400).send("Username not found in MaxDB");
+            }
+            maxdb.run("UPDATE users SET maxcoins = (?) WHERE username = (?)", [(row.maxcoins - amount), username], function (err) {
+                if (err) {
+                    return res.status(500).send("shit. on row " + row.id + " \n\n\n\n\n" + err);
+                }
+                res.status(200).send("Money removed?!?!?!?");
+            });
+        })
+
+    } catch (err) {
+        console.log(err);
+        console.log("Couldn't remove coin!");
+        res.status(500).send("Error removing coin");
+    }
+});
+
 maxapi.get("/maxcoin/check", (req, res) => {
     try {
         const { username } = req.body;
-        maxdb.get("SELECT * FROM users WHERE username = ?", [username], async (error, row) => {
+        maxdb.get("SELECT * FROM users WHERE username = (?)", ["max"], async (error, row) => {
             if (error) {
                 console.error(error);
                 return res.status(500).send("error? dunno m8");
