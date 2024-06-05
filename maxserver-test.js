@@ -122,9 +122,9 @@ maxapi.post("/maxcoin/remove", (req, res) => {
 maxapi.get("/maxcoin/check", (req, res) => {
     try {
         const { username } = req.body;
-        maxdb.get("SELECT * FROM users WHERE username = (?)", [username], async (error, row) => {
-            if (error) {
-                console.error(error);
+        maxdb.get("SELECT * FROM users WHERE username = (?)", [username], (err, row) => {
+            if (err) {
+                console.error(err);
                 return res.status(500).send("error? dunno m8");
             }
             if (!row) {
