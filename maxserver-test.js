@@ -119,7 +119,7 @@ maxapi.post("/maxcoin/remove", (req, res) => {
     }
 });
 
-maxapi.get("/maxcoin/check", (req, res) => {
+maxapi.post("/maxcoin/check", (req, res) => {
     try {
         const { username } = req.body;
         maxdb.get("SELECT * FROM users WHERE username = (?)", [username], (err, row) => {
