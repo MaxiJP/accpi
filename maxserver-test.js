@@ -128,7 +128,9 @@ maxapi.get("/maxcoin/check", (req, res) => {
                 return res.status(500).send("error? dunno m8");
             }
             if (!row) {
-                return res.status(400).send("Invalid username");
+                res.status(400).send("Invalid username");
+                console.log("#"+username+"#");
+                return;
             }
             res.status(200).json({ maxcoins: row.maxcoins });
         });
